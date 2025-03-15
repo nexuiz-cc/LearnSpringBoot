@@ -24,6 +24,12 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
+        Integer lastId = productRepository.findTopByOrderByIdDesc().getProductId();
+        if (lastId != null) {
+            product.setProductId(lastId + 1);
+        } else {
+            product.setProductId(1); // 如果表中没有数据，则设置为 1
+        }
         return productRepository.save(product);
     }
 
