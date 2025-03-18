@@ -1,9 +1,9 @@
 <template>
-  <LoginRegisterPage></LoginRegisterPage>
+  <HomePage />
 </template>
 
 <script setup lang="ts">
-import LoginRegisterPage from './components/LoginRegisterPage.vue'
+import HomePage from './views/HomePage.vue'
 </script>
 
 <style scoped lang="scss"></style>

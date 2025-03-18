@@ -12,10 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String userName; // 密码将通过Jasypt加密
-    private String password; // 密码将通过Jasypt加密
-    private String role;
+
+    private String userName; // 用户名
+    private String password; // 密码
+    private String role; // 角色
     private String email;
     private String phone;
+
 }

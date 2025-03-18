@@ -34,8 +34,7 @@ public class UserService {
         }
     }
     public User getUserByUserName(String username) {
-        String decryptedUsername = encryptionUtil.decrypt(username);
-        return  userRepository.findByUsername(decryptedUsername);
+        return  userRepository.findByUsername(username);
     }
 
     public Iterable<User> getAllUsers() {

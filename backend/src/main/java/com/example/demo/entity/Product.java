@@ -30,6 +30,6 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "del_flg", columnDefinition = "integer default 0")
-    private Integer delFlg = 0;
+    @Column(name = "del_flg")
+    private Integer delFlg;
 }
