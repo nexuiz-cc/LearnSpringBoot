@@ -38,13 +38,9 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) throws Exception {
-    // 验证用户名和密码
-    testEncryptionDecryption();
     User user = userService.getUserByUserName(authRequest.getUsername());
     boolean isValid = authRequest.getPassword().equals(decrypt(user.getPassword()));
-
     if (isValid) {
-      // 生成 JWT token
       String token = jwtTokenUtil.generateToken(authRequest.getUsername());
       Map<String, String> response = new HashMap<>();
       response.put("token", token);
