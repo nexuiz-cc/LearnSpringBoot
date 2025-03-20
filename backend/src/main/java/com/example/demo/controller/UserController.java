@@ -5,8 +5,10 @@ import com.example.demo.service.UserService;
 import com.example.demo.util.AuthRequest;
 import com.example.demo.util.EncryptionUtil;
 import com.example.demo.util.JwtTokenUtil;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.jasypt.util.text.AES256TextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +23,14 @@ public class UserController {
   private UserService userService;
   @Autowired
   private EncryptionUtil encryptionUtil;
+  @Value("${jasypt.encryptor.password}")
+  private String encryptorPassword;
 
   @Autowired
   JwtTokenUtil jwtTokenUtil;
 
   @PostMapping
   public User createUser(@RequestBody User user) {
-    String encryptedUsername = encryptionUtil.encrypt(user.getUserName());
-    user.setUserName(encryptedUsername);
     String encryptedPassword = encryptionUtil.encrypt(user.getPassword());
     user.setPassword(encryptedPassword);
     return userService.createUser(user);
@@ -36,21 +38,47 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) throws Exception {
+    // 验证用户名和密码
+    testEncryptionDecryption();
     User user = userService.getUserByUserName(authRequest.getUsername());
-    String token = jwtTokenUtil.generateToken(authRequest.getUsername());
-    if(user!=null && user.getPassword().equals(authRequest.getPassword())){
-      Map <String,String> response = new HashMap<>();
-      response.put("token",token);
+    boolean isValid = authRequest.getPassword().equals(decrypt(user.getPassword()));
+
+    if (isValid) {
+      // 生成 JWT token
+      String token = jwtTokenUtil.generateToken(authRequest.getUsername());
+      Map<String, String> response = new HashMap<>();
+      response.put("token", token);
       return ResponseEntity.ok(response);
-    }else{
-      throw new RuntimeException("Invalid cre!");
+    } else {
+      throw new RuntimeException("Invalid credentials!");
     }
   }
+
   private String decrypt(String encryptedValue) {
-    // 创建 Jasypt 加密器
+    try {
+      AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
+      textEncryptor.setPassword(encryptorPassword);
+      return textEncryptor.decrypt(encryptedValue);
+    } catch (EncryptionOperationNotPossibleException e) {
+      System.err.println("Decryption failed: " + e.getMessage());
+      throw e; // 或者处理异常
+    }
+  }
+  private String encrypt(String plainText) {
     AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-    textEncryptor.setPassword("yourSecretKey"); // 设置您的加密密钥
-    return textEncryptor.decrypt(encryptedValue);
+    textEncryptor.setPassword(encryptorPassword);
+    return textEncryptor.encrypt(plainText);
+  }
+  private void testEncryptionDecryption() {
+    String originalValue = "123456"; // 明文
+    String encryptedValue = encrypt(originalValue);
+    System.out.println("Encrypted Value: " + encryptedValue);
+    // 现在尝试解密
+    String decryptedValue = decrypt(encryptedValue);
+    System.out.println("Decrypted Value: " + decryptedValue);
+    // 验证解密是否成功
+    boolean result =  originalValue.equals(decryptedValue);
+    System.out.println("testEncryptionDecryption: " + result);
   }
   @GetMapping("/{id}")
   public User getUserByUserId(@PathVariable Integer id) {

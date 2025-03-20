@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query(value = "SELECT * FROM user_ly WHERE user_name = :username", nativeQuery = true)
-    User findByUsername(@Param("username") String username);
+    @Query(value = "SELECT * FROM user_ly WHERE user_name = :userName", nativeQuery = true)
+    User findByUsername(@Param("userName") String userName);
 
     @Query(value = "SELECT * FROM user_ly", nativeQuery = true)
     List<User> findAllUsers();
