@@ -58,7 +58,7 @@ public class JwtTokenUtil {
         .setClaims(claims)
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 1000)) // 5分钟过期
+        .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 30分钟过期
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }
