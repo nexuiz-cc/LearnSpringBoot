@@ -1,12 +1,17 @@
 <template>
   <div class="parent">
     <nav class="div1">
-      <button @click="toLogin()" id="btn" :class="{ active: currentView === 'login'}">
-        登录
-      </button>
-      <button @click="toRegister()" id="btn" :class="{ active: currentView === 'register' }">
-        注册
-      </button>
+      <div class="loginbox" :class="{ loginbox_active: currentView === 'login' }">
+        <button @click="toLogin()" id="btn" :class="{ active: currentView === 'login' }">
+          登录
+        </button>
+      </div>
+
+      <div class="registerbox" :class="{ registerbox_active: currentView === 'register' }">
+        <button @click="toRegister()" id="btn" :class="{ active: currentView === 'register' }">
+          注册
+        </button>
+      </div>
     </nav>
     <div class="div2">
       <router-view></router-view>
@@ -54,6 +59,19 @@ onMounted(() => {
   font-size: 16px;
 }
 
+.loginbox{
+  width: 215px;
+}
+.registerbox{
+  width: 215px;
+}
+.loginbox_active {
+  border-right: rgb(111, 7, 230) thick solid;
+}
+
+.registerbox_active {
+  border-right: rgb(111, 7, 230) thick solid;
+}
 .div1 button.active {
   display: flex;
   background-color: #007bff;

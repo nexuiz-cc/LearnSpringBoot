@@ -1,31 +1,83 @@
 <template>
   <div class="login-form">
-    <h2>登录</h2>
-    <form @submit.prevent="handleLogin">
-      <div class="form-group">
-        <label for="username">用户名:</label>
-        <input type="text" id="username" v-model="username" required />
-      </div>
-      <div class="form-group">
-        <label for="password">密码:</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit">登录</button>
-    </form>
+    <a-form
+    :model="formState"
+    name="basic"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }"
+    autocomplete="off"
+    @finish="onFinish"
+    @finishFailed="onFinishFailed"
+  >
+    <a-form-item
+      label="Username"
+      name="userName"
+      :rules="[{ required: true, message: 'Please input your username!' }]"
+    >
+      <a-input v-model:value="formState.userName" />
+    </a-form-item>
+
+    <a-form-item
+      label="Password"
+      name="password"
+      :rules="[{ required: true, message: 'Please input your password!' }]"
+    >
+      <a-input-password v-model:value="formState.password" />
+    </a-form-item>
+
+    <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
+      <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+    </a-form-item>
+
+    <a-form-item :wrapper-col="{ offset: 12, span: 16 }">
+      <a-button type="primary" html-type="submit" class="submit">登录</a-button>
+    </a-form-item>
+  </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const username = ref('')
-const password = ref('')
-
-const handleLogin = () => {
-  // 处理登录逻辑
-  console.log('Username:', username.value)
-  console.log('Password:', password.value)
+import { reactive } from 'vue';
+import { useUserStore } from '@/stores/UserStore'
+import { login } from '@/api/api';
+import router from '@/router';
+interface FormState {
+  username: string;
+  password: string;
+  remember: boolean;
 }
+
+
+interface IRequestBody{
+  username: string,
+  password: string
+}
+
+const userStore = useUserStore();
+const formState = reactive<FormState>({
+  username: '',
+  password: '',
+  remember: true,
+});
+
+const requestBody = reactive<IRequestBody>({
+  username: '',
+  password: ''
+});
+
+const onFinish = (values: any) => {
+  console.log('values:',values);
+  requestBody.username = values.userName;
+  requestBody.password=values.password
+  login(requestBody).then((res)=>{
+    userStore.userLogin(requestBody)
+    router.push('home')
+  })
+};
+
+const onFinishFailed = (errorInfo: any) => {
+  console.log('Failed:', errorInfo);
+};
 </script>
 
 <style scoped>
@@ -33,9 +85,17 @@ const handleLogin = () => {
   align-content: center;
   justify-content: center;
   width: 500px;
-  margin-top: 200px;
+  margin-top: 100px;
+  margin-left: -100px;
 }
-
+.userName{
+  position: relative;
+  height: 40px;
+}
+.password{
+  position: relative;
+  height: 40px;
+}
 .form-group {
   margin-bottom: 1rem;
 }
@@ -52,9 +112,9 @@ const handleLogin = () => {
   border-radius: 4px;
 }
 
-button {
-  padding: 0.75rem 1rem;
+.submit{
   font-size: 1rem;
+  width: 150px;
   cursor: pointer;
   background-color: #007bff;
   color: white;

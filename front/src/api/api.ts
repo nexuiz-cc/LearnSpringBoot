@@ -1,12 +1,15 @@
-import request from './request'
 
-export const login = (userName: string, password: string) => {
+import request from './request'
+interface IRequestBody{
+  username: string,
+  password: string
+}
+export const login = (requestBody:IRequestBody) => {
   return request({
-    url: 'user/login',
+    url: 'users/login',
     method: 'POST',
-    data: {
-      userName,
-      password,
-    },
+    data:
+      requestBody
+    ,
   })
 }

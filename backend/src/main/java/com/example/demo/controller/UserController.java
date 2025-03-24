@@ -43,6 +43,7 @@ public class UserController {
     if (isValid) {
       String token = jwtTokenUtil.generateToken(authRequest.getUsername());
       Map<String, String> response = new HashMap<>();
+      response.put("username", authRequest.getUsername());
       response.put("token", token);
       return ResponseEntity.ok(response);
     } else {
