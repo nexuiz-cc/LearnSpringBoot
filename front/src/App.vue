@@ -1,9 +1,9 @@
 <template>
-  <HomePage />
+  <Layout />
 </template>
 
 <script setup lang="ts">
-import HomePage from './views/HomePage.vue'
+import Layout from './views/Layout.vue'
 </script>
 
 <style scoped lang="scss"></style>

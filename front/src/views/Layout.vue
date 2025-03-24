@@ -11,7 +11,7 @@
 import LoginRegisterPage from '@/components/LoginRegisterPage.vue'
 import HomePage from './HomePage.vue'
 import { computed } from 'vue'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/UserStore'
 
 const username = computed(() => userStore.username)
 const userStore = useUserStore()

@@ -1,15 +1,15 @@
 <template>
   <div class="parent">
     <nav class="div1">
-      <button @click="toLogin()" id="btn" :class="{ active: currentView === 'login' }">登录</button>
+      <button @click="toLogin()" id="btn" :class="{ active: currentView === 'login'}">
+        登录
+      </button>
       <button @click="toRegister()" id="btn" :class="{ active: currentView === 'register' }">
         注册
       </button>
     </nav>
     <div class="div2">
-      <router-view v-slot="{ Component }">
-        <component :is="Component"></component>
-      </router-view>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -36,6 +36,9 @@ const toRegister = () => {
 onMounted(() => {
   if (route.path === '/register') {
     currentView.value = 'register'
+  } else {
+    // 默认导航到登录页面
+    router.push('/login')
   }
 })
 </script>

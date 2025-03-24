@@ -33,6 +33,7 @@ const handleLogin = () => {
   align-content: center;
   justify-content: center;
   width: 500px;
+  margin-top: 200px;
 }
 
 .form-group {
