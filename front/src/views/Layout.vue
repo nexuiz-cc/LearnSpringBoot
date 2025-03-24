@@ -1,9 +1,9 @@
 <template>
   <div v-if="username == 'xx'">
-    <LoginRegisterPage />
+    <router-view></router-view>
   </div>
   <div v-if="username != 'xx'">
-    <HomePage />
+    <router-view name="user"></router-view>
   </div>
 </template>
 
