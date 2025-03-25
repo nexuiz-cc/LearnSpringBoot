@@ -2,50 +2,41 @@
   <div class="parent">
     <nav class="div1">
       <div class="loginbox" :class="{ loginbox_active: currentView === 'login' }">
-        <button @click="toLogin()" id="btn" :class="{ active: currentView === 'login' }">
+        <button @click="activeTab = 'login'"  id="btn" :class="{ active: currentView === 'login' }">
           登录
         </button>
       </div>
 
       <div class="registerbox" :class="{ registerbox_active: currentView === 'register' }">
-        <button @click="toRegister()" id="btn" :class="{ active: currentView === 'register' }">
+        <button @click="activeTab = 'register'"  id="btn" :class="{ active: currentView === 'register' }">
           注册
         </button>
       </div>
     </nav>
     <div class="div2">
-
+      <Login
+        :mode="activeTab"
+        @submit="handleAuthSubmit"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-
+import Login from '@/components/Login.vue'
+import { ref } from 'vue'
+import { useRouter  } from 'vue-router'
 const router = useRouter()
-const route = useRoute()
-
+const activeTab = ref('login')
 const currentView = ref('login')
-
-const toLogin = () => {
-  currentView.value = 'login'
-  router.push('/login')
-}
-
-const toRegister = () => {
-  currentView.value = 'register'
-  router.push('/register')
-}
-
-onMounted(() => {
-  if (route.path === '/register') {
-    currentView.value = 'register'
-  } else {
-    // 默认导航到登录页面
-    router.push('/login')
+const handleAuthSubmit = (success:boolean) => {
+  if (success) {
+    router.push('/list')
   }
-})
+}
+
+
+
 </script>
 
 <style scoped>

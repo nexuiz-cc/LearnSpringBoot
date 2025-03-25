@@ -1,124 +1,102 @@
 <template>
-  <div class="login-form">
-    <a-form
-    :model="formState"
-    name="basic"
-    :label-col="{ span: 8 }"
-    :wrapper-col="{ span: 16 }"
-    autocomplete="off"
-    @finish="onFinish"
-    @finishFailed="onFinishFailed"
-  >
-    <a-form-item
-      label="Username"
-      name="userName"
-      :rules="[{ required: true, message: 'Please input your username!' }]"
-    >
-      <a-input v-model:value="formState.userName" />
-    </a-form-item>
+  <form @submit.prevent="handleSubmit" class="auth-form">
+    <h2>{{ mode === 'login' ? '登录' : '注册' }}</h2>
 
-    <a-form-item
-      label="Password"
-      name="password"
-      :rules="[{ required: true, message: 'Please input your password!' }]"
-    >
-      <a-input-password v-model:value="formState.password" />
-    </a-form-item>
+    <div class="form-group">
+      <label>用户名</label>
+      <input v-model="form.username" type="text" required>
+    </div>
 
-    <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
-      <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
-    </a-form-item>
+    <div class="form-group">
+      <label>密码</label>
+      <input v-model="form.password" type="password" required>
+    </div>
 
-    <a-form-item :wrapper-col="{ offset: 12, span: 16 }">
-      <a-button type="primary" html-type="submit" class="submit">登录</a-button>
-    </a-form-item>
-  </a-form>
-  </div>
+    <div v-if="mode === 'register'" class="form-group">
+      <label>确认密码</label>
+      <input v-model="form.confirmPassword" type="password" required>
+    </div>
+
+    <button type="submit">{{ mode === 'login' ? '登录' : '注册' }}</button>
+
+    <p v-if="error" class="error">{{ error }}</p>
+  </form>
 </template>
 
-<script setup lang="ts">
-import { reactive } from 'vue';
-import { useUserStore } from '@/stores/UserStore'
-import { login } from '@/api/api';
-import router from '@/router';
-interface FormState {
-  username: string;
-  password: string;
-  remember: boolean;
-}
 
+<script setup>
+import { ref, defineProps, defineEmits } from 'vue'
 
-interface IRequestBody{
-  username: string,
-  password: string
-}
+const props = defineProps({
+  mode: {
+    type: String,
+    default: 'login',
+    validator: value => ['login', 'register'].includes(value)
+  }
+})
 
-const userStore = useUserStore();
-const formState = reactive<FormState>({
+const emit = defineEmits(['submit'])
+
+const form = ref({
   username: '',
   password: '',
-  remember: true,
-});
+  confirmPassword: ''
+})
 
-const requestBody = reactive<IRequestBody>({
-  username: '',
-  password: ''
-});
+const error = ref('')
 
-const onFinish = (values: any) => {
-  console.log('values:',values);
-  requestBody.username = values.userName;
-  requestBody.password=values.password
-  login(requestBody).then((res)=>{
-    userStore.userLogin(requestBody)
-    router.push('home')
-  })
-};
+const handleSubmit = () => {
+  error.value = ''
 
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
-};
+  if (props.mode === 'register' && form.value.password !== form.value.confirmPassword) {
+    error.value = '两次密码输入不一致'
+    return
+  }
+
+  // 模拟认证成功
+  localStorage.setItem('isAuthenticated', 'true')
+  localStorage.setItem('username', form.value.username)
+
+  emit('submit', true)
+}
 </script>
-
 <style scoped>
-.login-form {
-  align-content: center;
-  justify-content: center;
-  width: 500px;
-  margin-top: 100px;
-  margin-left: -100px;
+.auth-form {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
-.userName{
-  position: relative;
-  height: 40px;
-}
-.password{
-  position: relative;
-  height: 40px;
-}
+
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 5px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.5rem;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.submit{
-  font-size: 1rem;
-  width: 150px;
-  cursor: pointer;
-  background-color: #007bff;
+button {
+  width: 100%;
+  padding: 10px;
+  background: #42b983;
   color: white;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
 }
 </style>

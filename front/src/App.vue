@@ -1,9 +1,13 @@
 <template>
-  <Layout />
+  <router-view />
 </template>
 
-<script setup lang="ts">
-import Layout from './views/Layout.vue'
+<script setup>
 </script>
 
-<style scoped lang="scss"></style>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+</style>
