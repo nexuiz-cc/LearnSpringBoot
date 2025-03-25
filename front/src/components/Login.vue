@@ -1,57 +1,114 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="auth-form">
+  <a-form
+    :model="formState"
+    name="basic"
+    layout="horizontal"
+    autocomplete="off"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }"
+    @finish="onFinish"
+    class="auth-form"
+    @finishFailed="onFinishFailed"
+  >
     <h2>{{ mode === 'login' ? '登录' : '注册' }}</h2>
+    <a-form-item
+      label="Username"
+      name="username"
+      class="username"
+      :rules="[{ required: true, message: 'Please input your username!' }]"
+    >
+      <a-input v-model:value="formState.username" />
+    </a-form-item>
 
-    <div class="form-group">
-      <label>用户名</label>
-      <input v-model="form.username" type="text" required>
-    </div>
+    <a-form-item
+      label="Password"
+      name="password"
+      class="password"
+      :rules="[{ required: true, message: 'Please input your password!' }]"
+    >
+      <a-input-password v-model:value="formState.password" />
+    </a-form-item>
 
-    <div class="form-group">
-      <label>密码</label>
-      <input v-model="form.password" type="password" required>
-    </div>
+    <a-form-item
+      v-if="mode === 'register'"
+      label="ConfirmPassword"
+      name="confirmPassword"
+      class="confirmPassword"
+      :rules="[{ required: true, message: 'Please confirm your password!' }]"
+    >
+      <a-input-password v-model:value="formState.confirmPassword" />
+    </a-form-item>
 
-    <div v-if="mode === 'register'" class="form-group">
-      <label>确认密码</label>
-      <input v-model="form.confirmPassword" type="password" required>
-    </div>
+    <a-form-item name="remember" class="remember">
+      <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+    </a-form-item>
 
-    <button type="submit">{{ mode === 'login' ? '登录' : '注册' }}</button>
-
-    <p v-if="error" class="error">{{ error }}</p>
-  </form>
+    <a-form-item>
+      <a-button type="primary" html-type="submit" class="submit">{{
+        mode === 'login' ? '登录' : '注册'
+      }}</a-button>
+    </a-form-item>
+  </a-form>
 </template>
 
+<script setup lang="ts">
+import { login } from '@/api/api'
+import router from '@/router'
+import { ref, defineProps, defineEmits, reactive } from 'vue'
 
-<script setup>
-import { ref, defineProps, defineEmits } from 'vue'
+interface RequestBody {
+  username: string
+  password: string
+}
 
+interface FormState {
+  username: string
+  password: string
+  confirmPassword: string
+  remember: boolean
+}
+
+const formState = reactive<FormState>({
+  username: '',
+  password: '',
+  confirmPassword: '',
+  remember: true,
+})
 const props = defineProps({
   mode: {
     type: String,
     default: 'login',
-    validator: value => ['login', 'register'].includes(value)
-  }
+    validator: (value: string) => ['login', 'register'].includes(value),
+  },
 })
 
 const emit = defineEmits(['submit'])
 
 const form = ref({
-  username: '',
-  password: '',
-  confirmPassword: ''
+  username: 'Louise Stewart',
+  password: '123456',
+  confirmPassword: '123456',
 })
 
 const error = ref('')
-
-const handleSubmit = () => {
-  error.value = ''
-
+const requestBody: RequestBody = {
+  username: form.value.username,
+  password: form.value.password,
+}
+const onFinish = () => {
   if (props.mode === 'register' && form.value.password !== form.value.confirmPassword) {
     error.value = '两次密码输入不一致'
     return
   }
+
+  if (props.mode === 'login') {
+    login(requestBody).then((response) => {
+      console.log(response)
+      router.push('home')
+    })
+  }
+
+  error.value = ''
 
   // 模拟认证成功
   localStorage.setItem('isAuthenticated', 'true')
@@ -59,11 +116,14 @@ const handleSubmit = () => {
 
   emit('submit', true)
 }
+
+const onFinishFailed = (errorInfo: unknown) => {
+  console.log('Failed:', errorInfo)
+}
 </script>
 <style scoped>
 .auth-form {
-  max-width: 400px;
-  width: 100%;
+  max-width: 600px;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -73,6 +133,15 @@ const handleSubmit = () => {
   margin-bottom: 15px;
 }
 
+.remember {
+  position: relative;
+  top: -20px;
+}
+.password,
+.username,
+.confirmPassword {
+  width: 400px;
+}
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -85,14 +154,15 @@ const handleSubmit = () => {
   border-radius: 4px;
 }
 
-button {
+.submit {
   width: 100%;
-  padding: 10px;
-  background: #42b983;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  position: relative;
+  top: -20px;
 }
 
 .error {

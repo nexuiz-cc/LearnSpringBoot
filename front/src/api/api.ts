@@ -1,15 +1,32 @@
-
 import request from './request'
-interface IRequestBody{
-  username: string,
+interface LoginBody {
+  username: string
   password: string
 }
-export const login = (requestBody:IRequestBody) => {
+enum Role {
+  Admin = 'admin',
+  Support = 'support',
+}
+interface RegisterBody {
+  id: number
+  username: string
+  password: string
+  role: Role
+  email: string
+  phone: string
+}
+export const login = (loginBody: LoginBody) => {
   return request({
     url: 'users/login',
     method: 'POST',
-    data:
-      requestBody
-    ,
+    data: loginBody,
+  })
+}
+
+export const register = (registerBody: RegisterBody) => {
+  return request({
+    url: 'users/register',
+    method: 'POST',
+    data: registerBody,
   })
 }
