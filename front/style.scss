@@ -1,0 +1,36 @@
+$font_size: 50px;
+$left: 250px;
+$green: rgb(2, 189, 2);
+
+.ant-anchor-ink {
+  display: flex;
+  margin-left: $left;
+}
+
+.ant-anchor-ink ant-anchor-ink-visible-ink {
+  margin-left: $left;
+}
+
+.ant-anchor-ink ant-anchor-link-active {
+  margin-left: $left;
+}
+
+.ant-anchor::before {
+  display: flex;
+  margin-left: $left;
+}
+.ant-anchor-link-title {
+  font-size: $font_size;
+}
+
+#app > div > nav > div > div > div > div > div.ant-anchor-link.ant-anchor-link-active > a > span {
+  color: $green !important;
+}
+
+#app > div > nav > div > div > div > div > div.ant-anchor-link.ant-anchor-link-active > a {
+  color: $green !important;
+}
+
+#app > div > nav > div > div > div > div > div:nth-child(2) > a > span {
+  color: black !important;
+}

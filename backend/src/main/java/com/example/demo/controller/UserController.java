@@ -39,16 +39,26 @@ public class UserController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) throws Exception {
     User user = userService.getUserByUserName(authRequest.getUsername());
+    int id = user.getId();
     boolean isValid = authRequest.getPassword().equals(decrypt(user.getPassword()));
     if (isValid) {
       String token = jwtTokenUtil.generateToken(authRequest.getUsername());
       Map<String, String> response = new HashMap<>();
+      response.put("id", String.valueOf(id));
       response.put("username", authRequest.getUsername());
       response.put("token", token);
       return ResponseEntity.ok(response);
     } else {
       throw new RuntimeException("Invalid credentials!");
     }
+  }
+
+  @GetMapping("/lastId")
+  public ResponseEntity<?> getLastId(){
+    int lastId =userService.getLastId();
+    Map<String, String> response = new HashMap<>();
+    response.put("id", String.valueOf(lastId));
+    return ResponseEntity.ok(response);
   }
 
   private String decrypt(String encryptedValue) {
@@ -65,17 +75,6 @@ public class UserController {
     AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
     textEncryptor.setPassword(encryptorPassword);
     return textEncryptor.encrypt(plainText);
-  }
-  private void testEncryptionDecryption() {
-    String originalValue = "123456"; // 明文
-    String encryptedValue = encrypt(originalValue);
-    System.out.println("Encrypted Value: " + encryptedValue);
-    // 现在尝试解密
-    String decryptedValue = decrypt(encryptedValue);
-    System.out.println("Decrypted Value: " + decryptedValue);
-    // 验证解密是否成功
-    boolean result =  originalValue.equals(decryptedValue);
-    System.out.println("testEncryptionDecryption: " + result);
   }
   @GetMapping("/{id}")
   public User getUserByUserId(@PathVariable Integer id) {

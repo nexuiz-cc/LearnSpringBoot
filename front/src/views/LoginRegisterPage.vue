@@ -1,23 +1,25 @@
 <template>
   <div class="parent">
     <nav class="div1">
-      <div class="loginbox" :class="{ loginbox_active: currentView === 'login' }">
-        <button @click="activeTab = 'login'"  id="btn" :class="{ active: currentView === 'login' }">
-          登录
-        </button>
-      </div>
-
-      <div class="registerbox" :class="{ registerbox_active: currentView === 'register' }">
-        <button @click="activeTab = 'register'"  id="btn" :class="{ active: currentView === 'register' }">
-          注册
-        </button>
-      </div>
+      <a-anchor
+        class="anchor"
+        :items="[
+          {
+            key: 'login',
+            href: 'login',
+            title: () => h('span', { style: 'color: red' }, 'ログイン'),
+          },
+          {
+            key: 'register',
+            href: 'register',
+            title: '新規登録',
+          },
+        ]"
+        @click="handleClick"
+      />
     </nav>
     <div class="div2">
-      <Login
-        :mode="activeTab"
-        @submit="handleAuthSubmit"
-      />
+      <Login :mode="activeTab" @submit="handleAuthSubmit" />
     </div>
   </div>
 </template>
@@ -25,18 +27,22 @@
 <script setup lang="ts">
 import Login from '@/components/Login.vue'
 import { ref } from 'vue'
-import { useRouter  } from 'vue-router'
+import { useRouter } from 'vue-router'
+import type { AnchorProps } from 'ant-design-vue'
+import { h } from 'vue'
+
 const router = useRouter()
 const activeTab = ref('login')
-const currentView = ref('login')
-const handleAuthSubmit = (success:boolean) => {
+const handleAuthSubmit = (success: boolean) => {
   if (success) {
     router.push('/list')
   }
 }
 
-
-
+const handleClick: AnchorProps['onClick'] = (e, link) => {
+  e.preventDefault()
+  activeTab.value = link.href
+}
 </script>
 
 <style scoped>
@@ -50,10 +56,10 @@ const handleAuthSubmit = (success:boolean) => {
   font-size: 16px;
 }
 
-.loginbox{
+.loginbox {
   width: 215px;
 }
-.registerbox{
+.registerbox {
   width: 215px;
 }
 .loginbox_active {
@@ -92,11 +98,18 @@ const handleAuthSubmit = (success:boolean) => {
   flex-direction: column; /* 垂直排列子元素 */
   position: relative;
   left: -100px;
-  top: -50px;
+  top: -250px;
 }
 .div2 {
   grid-area: 1 / 2 / 2 / 3;
   align-content: center;
   justify-content: center;
+  position: relative;
+  top: -120px;
+}
+
+.anchor {
+  position: relative;
+  top: -70px;
 }
 </style>

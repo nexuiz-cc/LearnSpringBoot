@@ -84,6 +84,10 @@ public class UserService {
         return userRepository.findAllUsers();
     }
 
+    public Integer getLastId(){
+        Integer lastId = userRepository.findTopByOrderByIdDesc().getId();
+        return lastId+1;
+    }
 
     public void deleteUser(Integer userid) {
         userRepository.deleteById(userid);

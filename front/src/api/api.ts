@@ -30,3 +30,10 @@ export const register = (registerBody: RegisterBody) => {
     data: registerBody,
   })
 }
+
+export const getLastId = () => {
+  return request({
+    url: 'users/lastId',
+    method: 'GET',
+  })
+}

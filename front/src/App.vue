@@ -2,8 +2,7 @@
   <router-view />
 </template>
 
-<script setup>
-</script>
+<script setup lang="ts"></script>
 
 <style>
 body {
