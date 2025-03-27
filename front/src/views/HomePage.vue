@@ -9,42 +9,39 @@
       <div class="logo" />
       <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
         <a-menu-item key="1">
-          <user-outlined />
-          <span class="nav-text">nav 1</span>
+          <router-link to="/dashboard">レポート</router-link>
         </a-menu-item>
         <a-menu-item key="2">
-          <video-camera-outlined />
-          <span class="nav-text">nav 2</span>
+          <router-link to="/products">商品一覧</router-link>
         </a-menu-item>
         <a-menu-item key="3">
-          <upload-outlined />
-          <span class="nav-text">nav 3</span>
+          <router-link to="/userInfo">客先一覧</router-link>
         </a-menu-item>
         <a-menu-item key="4">
-          <user-outlined />
-          <span class="nav-text">nav 4</span>
+          <router-link to="/userInfo">スタッフ一覧</router-link>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header :style="{ background: '#fff', padding: 0 }">
-        <a-button class="logout" @click="logout">LogOut</a-button></a-layout-header
-      >
-      <a-layout-content :style="{ margin: '24px 16px 0' }">
-        <div :style="{ padding: '24px', background: '#fff', minHeight: '855px' }">content</div>
+      <a-layout-header :style="{ background: 'white', padding: 0, height: '50px' }">
+        <h2 class="h2">welcome: {{ username }}</h2>
+        <a-button type="primary" class="logout" @click="logout">LogOut</a-button>
+      </a-layout-header>
+
+      <a-layout-content>
+        <div :style="{ padding: '24px', background: '#fff', minHeight: '966px', color: 'black' }">
+          <router-view></router-view>
+        </div>
       </a-layout-content>
-      <a-layout-footer style="text-align: center">
-        Ant Design ©2018 Created by Ant UED
-      </a-layout-footer>
     </a-layout>
   </a-layout>
-  <!-- <div></div> -->
 </template>
 <script setup lang="ts">
 import router from '@/router'
 import { useUserStore } from '@/stores/UserStore'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 const userStore = useUserStore()
+const username = computed(() => userStore.username)
 const logout = () => {
   localStorage.setItem('username', 'xx')
   localStorage.setItem('token', 'xx')
@@ -54,6 +51,9 @@ const logout = () => {
   router.go(0)
 }
 
+onMounted(() => {
+  userStore.loadUser()
+})
 const onCollapse = (collapsed: boolean, type: string) => {
   console.log(collapsed, type)
 }
@@ -62,12 +62,19 @@ const onBreakpoint = (broken: boolean) => {
   console.log(broken)
 }
 
-const selectedKeys = ref<string[]>(['4'])
+const selectedKeys = ref<string[]>(['2'])
 </script>
 <style scoped>
 .logout {
   position: relative;
+  top: -80px;
   left: 1750px;
+}
+
+.h2 {
+  display: flex;
+  margin-left: 20px;
+  margin-top: -10px;
 }
 #components-layout-demo-responsive .logo {
   height: 32px;

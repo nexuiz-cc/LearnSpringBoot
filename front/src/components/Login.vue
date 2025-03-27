@@ -156,8 +156,10 @@ const onFinish = () => {
 
   if (props.mode === 'login') {
     login(requestBody).then((response) => {
-      console.log(response)
-      router.push('home')
+      localStorage.setItem('username', response.data.username)
+      localStorage.setItem('userId', response.data.userId)
+      localStorage.setItem('token', response.data.token)
+      router.push('/products')
     })
   }
 

@@ -37,3 +37,10 @@ export const getLastId = () => {
     method: 'GET',
   })
 }
+
+export const getAllProducts = () => {
+  return request({
+    url: 'products',
+    method: 'GET',
+  })
+}
